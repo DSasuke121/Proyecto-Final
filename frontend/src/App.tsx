@@ -28,24 +28,22 @@ interface Stand {
   potential: number;
 }
 
-const API_URL = 'http://localhost:8080/api/stands';
+// URL ACTUALIZADA CON TU ENLACE DE RENDER
+const API_URL = 'https://proyecto-final-20b8.onrender.com/api/stands';
 
 const StandPrismCard = ({ stand, onEdit, onDelete }: { stand: Stand, onEdit: (s: Stand) => void, onDelete: (id: number) => void }) => {
   const [currentFace, setCurrentFace] = useState(0);
 
-  // Función exclusiva para girar
   const rotatePrism = () => {
     setCurrentFace((prevFace) => (prevFace + 1) % 3);
   };
 
-  // Función exclusiva para editar
   const handleEditClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    e.stopPropagation(); // Detiene cualquier otro evento
+    e.stopPropagation();
     onEdit(stand);
   };
 
-  // Función exclusiva para eliminar
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -56,7 +54,6 @@ const StandPrismCard = ({ stand, onEdit, onDelete }: { stand: Stand, onEdit: (s:
     <div className={`flip-card-prism show-face-${currentFace}`}>
       <div className="prism-inner">
         
-        {/* CARA 0: USUARIO */}
         <div className="prism-side side-user" onClick={rotatePrism}>
           <h3 className="card-name-user">{stand.standUser}</h3>
           <img 
@@ -67,16 +64,13 @@ const StandPrismCard = ({ stand, onEdit, onDelete }: { stand: Stand, onEdit: (s:
           <div className="click-hint">CLICK PARA VER STAND</div>
         </div>
 
-        {/* CARA 1: STAND */}
         <div className="prism-side side-stand" onClick={rotatePrism}>
           <h3 className="card-name-stand">{stand.name}</h3>
           <img src={stand.imageUrl} alt={stand.name} className="prism-image" />
           <div className="click-hint">CLICK PARA VER ESTADÍSTICAS</div>
         </div>
 
-        {/* CARA 2: STATS */}
         <div className="prism-side side-stats">
-          {/* Este contenedor invisible es el que hace girar la tarjeta */}
           <div className="stats-clickable-area" onClick={rotatePrism}>
             <div className="back-info-header">
               <h3>{stand.name}</h3>
@@ -105,7 +99,6 @@ const StandPrismCard = ({ stand, onEdit, onDelete }: { stand: Stand, onEdit: (s:
             <div className="click-hint">CLICK PARA VER USUARIO</div>
           </div>
           
-          {/* Los botones están TOTALMENTE SEPARADOS del área de clic para girar */}
           <div className="card-buttons">
             <button type="button" className="edit-btn" onClick={handleEditClick}>Editar</button>
             <button type="button" className="delete-btn" onClick={handleDeleteClick}>Eliminar</button>
@@ -131,7 +124,7 @@ function App() {
     try {
       const response = await axios.get<Stand[]>(API_URL);
       setStands(response.data);
-    } catch (error) { console.error(error); }
+    } catch (error) { console.error("Error cargando stands:", error); }
   };
 
   const handleAppEdit = (stand: Stand) => {
