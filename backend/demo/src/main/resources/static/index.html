@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario de Stands</title>
+    <!-- Importar Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f9; }
+        .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 500px; margin-bottom: 30px; }
+        input { display: block; margin-bottom: 10px; width: 95%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        button { padding: 10px 15px; cursor: pointer; background-color: #6a1b9a; color: white; border: none; border-radius: 4px; width: 100%; font-weight: bold; }
+        button:hover { background-color: #4a148c; }
+        
+        /* Diseño de Tarjetas para los Stands */
+        #standsContainer { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .stand-card { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); text-align: center; }
+        .stand-image { width: 100%; height: 250px; object-fit: contain; border-radius: 4px; background: #eee; margin-bottom: 15px; }
+        .chart-container { width: 100%; max-width: 300px; margin: 0 auto; }
+        .delete-btn { background-color: #dc3545; margin-top: 15px; }
+        .delete-btn:hover { background-color: #c82333; }
+    </style>
+</head>
+<body>
+
+    <h2>Registrar Nuevo Stand</h2>
+    <div class="form-container">
+        <form id="standForm">
+            <input type="text" id="name" placeholder="Nombre del Stand" required>
+            <input type="text" id="user" placeholder="Portador (Usuario)" required>
+            <input type="text" id="ability" placeholder="Habilidad principal" required>
+            <input type="url" id="imageUrl" placeholder="URL de la imagen (Ej. https://.../star.png)" required>
+            
+            <p style="margin-bottom: 5px; font-size: 14px;"><strong>Estadísticas (1=E, 2=D, 3=C, 4=B, 5=A)</strong></p>
+            <div class="stats-grid">
+                <input type="number" id="power" placeholder="Poder (1-5)" min="1" max="5" required>
+                <input type="number" id="speed" placeholder="Velocidad (1-5)" min="1" max="5" required>
+                <input type="number" id="range" placeholder="Alcance (1-5)" min="1" max="5" required>
+                <input type="number" id="durability" placeholder="Durabilidad (1-5)" min="1" max="5" required>
+                <input type="number" id="precision" placeholder="Precisión (1-5)" min="1" max="5" required>
+                <input type="number" id="potential" placeholder="Potencial (1-5)" min="1" max="5" required>
+            </div>
+            
+            <button type="submit" style="margin-top: 10px;">Guardar Stand</button>
+        </form>
+    </div>
+
+    <h2>Directorio de Stands</h2>
+    <div id="standsContainer">
+        <!-- Las tarjetas se insertarán aquí desde JavaScript -->
+    </div>
+
+    <script>
+        const apiUrl = '/api/stands';
+
+        // Función para cargar los Stands desde tu API en Java
+        async function loadStands() {
+            const response = await fetch(apiUrl);
+            const stands = await response.json();
+            const container = document.getElementById('standsContainer');
+            container.innerHTML = ''; 
+
+            stands.forEach(stand => {
+                // Crear la tarjeta HTML para cada Stand
+                const card = document.createElement('div');
+                card.className = 'stand-card';
+                card.innerHTML = `
+                    <h3 style="margin-top: 0;">${stand.name}</h3>
+                    <p style="margin: 5px 0;"><strong>Portador:</strong> ${stand.standUser}</p>
+                    <p style="margin: 5px 0 15px 0; color: #555;"><em>${stand.ability}</em></p>
+                    <img src="${stand.imageUrl}" alt="${stand.name}" class="stand-image">
+                    
+                    <!-- Contenedor donde Chart.js dibujará el gráfico -->
+                    <div class="chart-container">
+                        <canvas id="chart-${stand.id}"></canvas>
+                    </div>
+                    
+                    <button class="delete-btn" onclick="deleteStand(${stand.id})">Eliminar Stand</button>
+                `;
+                container.appendChild(card);
+
+                // Configuración del gráfico Radar de JoJo para este Stand en específico
+                const ctx = document.getElementById(`chart-${stand.id}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Poder', 'Velocidad', 'Precisión', 'Potencial', 'Durabilidad', 'Alcance'],
+                        datasets: [{
+                            label: 'Estadísticas',
+                            data: [stand.power, stand.speed, stand.precision, stand.potential, stand.durability, stand.range],
+                            backgroundColor: 'rgba(106, 27, 154, 0.4)',
+                            borderColor: 'rgba(106, 27, 154, 1)',
+                            pointBackgroundColor: 'rgba(106, 27, 154, 1)',
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                min: 0,
+                                max: 5,
+                                ticks: { stepSize: 1, display: false } // Oculta los números para que se vea como en el anime
+                            }
+                        },
+                        plugins: { legend: { display: false } } // Oculta la leyenda superior
+                    }
+                });
+            });
+        }
+
+        // Función para enviar los datos al hacer clic en "Guardar Stand"
+        document.getElementById('standForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); 
+            const newStand = {
+                name: document.getElementById('name').value,
+                standUser: document.getElementById('user').value,
+                ability: document.getElementById('ability').value,
+                imageUrl: document.getElementById('imageUrl').value,
+                power: document.getElementById('power').value,
+                speed: document.getElementById('speed').value,
+                range: document.getElementById('range').value,
+                durability: document.getElementById('durability').value,
+                precision: document.getElementById('precision').value,
+                potential: document.getElementById('potential').value
+            };
+
+            await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newStand)
+            });
+
+            document.getElementById('standForm').reset();
+            loadStands(); 
+        });
+
+        // Función para eliminar un Stand
+        async function deleteStand(id) {
+            await fetch(`${apiUrl}/${id}`, { method: 'DELETE' });
+            loadStands(); 
+        }
+
+        // Ejecutar la carga inicial al abrir la página
+        loadStands();
+    </script>
+</body>
+</html>

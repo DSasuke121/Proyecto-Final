@@ -1,0 +1,256 @@
+/* --- 1. CONFIGURACIÓN DEL FONDO (MENACING) --- */
+@keyframes menacingMove {
+  from { background-position: 0 0; }
+  to { background-position: 500px 500px; }
+}
+
+body {
+  margin: 0;
+  padding: 20px;
+  background: #1a1a1a url('./assets/menacing.jpg') repeat;
+  background-size: 300px;
+  animation: menacingMove 25s linear infinite;
+  perspective: 1500px; /* Necesario para que el prisma se vea en 3D */
+  color: #f4f4f9;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- 2. TÍTULOS ESTILO JOJO (DORADO Y MORADO) --- */
+h1, .section-title {
+  font-family: 'Impact', sans-serif;
+  font-style: italic;
+  text-align: center;
+  text-transform: uppercase;
+  color: #ffcc00; /* Dorado clásico */
+  text-shadow: 4px 4px 0px #6a1b9a, 8px 8px 0px #000; /* Relieve morado y negro */
+  -webkit-text-stroke: 1.5px black;
+  letter-spacing: 5px;
+}
+
+h1 { font-size: 4rem; margin-bottom: 40px; }
+.section-title { font-size: 3.5rem; margin-top: 60px; margin-bottom: 30px; }
+
+/* --- 3. FORMULARIO CON FONDO ALLSTANDS --- */
+.form-container {
+  background: linear-gradient(rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94)), 
+              url('./assets/allstands.jpg');
+  background-size: cover;
+  background-position: center;
+  padding: 30px;
+  border-radius: 12px;
+  border: 5px solid #ffcc00;
+  max-width: 550px;
+  margin: 0 auto 50px;
+  color: #333;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.form-container h2 {
+  font-family: 'Impact', sans-serif;
+  color: #6a1b9a;
+  text-align: center;
+  margin-top: 0;
+}
+
+.input-group { margin-bottom: 12px; text-align: left; }
+.input-group label { display: block; font-weight: bold; color: #6a1b9a; margin-bottom: 4px; font-size: 0.9rem; }
+.input-group input { 
+  width: 100%; 
+  padding: 10px; 
+  border-radius: 6px; 
+  border: 1px solid #ddd; 
+  box-sizing: border-box; 
+  background: rgba(255,255,255,0.8); 
+}
+
+/* Rejilla de estadísticas del formulario */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.stat-field { text-align: left; }
+.stat-field label { font-size: 0.8rem; font-weight: bold; color: #444; }
+.stat-field input { width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd; }
+
+.save-btn {
+  background: #6a1b9a;
+  color: #ffcc00;
+  border: 2px solid #ffcc00;
+  padding: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  text-transform: uppercase;
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+}
+
+.save-btn:hover { transform: scale(1.02); }
+
+/* --- 4. CONTENEDOR DE LAS TARJETAS --- */
+.stands-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 50px;
+  justify-items: center;
+  padding: 20px;
+}
+
+/* --- 5. LÓGICA DEL PRISMA TRIANGULAR (3 CARAS) --- */
+.flip-card-prism {
+  width: 350px;
+  height: 620px;
+  perspective: 1500px;
+}
+
+.prism-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+/* Rotaciones para mostrar cada cara */
+.flip-card-prism.show-face-0 .prism-inner { transform: rotateY(0deg); }
+.flip-card-prism.show-face-1 .prism-inner { transform: rotateY(-120deg); }
+.flip-card-prism.show-face-2 .prism-inner { transform: rotateY(-240deg); }
+
+.prism-side {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border: 5px solid #ffcc00;
+  border-radius: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+/* CARA 0: USUARIO (FRENTE) */
+.prism-side.side-user {
+  background: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), 
+              url('./assets/allstands.jpg');
+  transform: translateZ(101px); /* d = (width/2) / tan(60deg) */
+  padding: 20px;
+}
+
+/* CARA 1: STAND (DERECHA) */
+.prism-side.side-stand {
+  background: linear-gradient(rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.85)), 
+              url('./assets/allstands.jpg');
+  transform: rotateY(120deg) translateZ(101px);
+  padding: 20px;
+}
+
+/* CARA 2: ESTADÍSTICAS (IZQUIERDA) */
+.prism-side.side-stats {
+  background: linear-gradient(rgba(255, 255, 255, 0.96), rgba(255, 255, 255, 0.96)), 
+              url('./assets/allstands.jpg');
+  transform: rotateY(240deg) translateZ(101px);
+  padding: 0; /* Padding manejado internamente por secciones */
+}
+
+/* --- 6. ELEMENTOS DENTRO DE LAS TARJETAS --- */
+
+/* Nombre del Usuario (Arial Narrow) */
+.card-name-user {
+  font-family: 'Arial Narrow', sans-serif;
+  font-weight: bold;
+  font-style: italic;
+  color: #1a1a1a;
+  font-size: 2rem;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+}
+
+/* Nombre del Stand (Impact Dorado con Relieve) */
+.card-name-stand {
+  font-family: 'Impact', sans-serif;
+  font-style: italic;
+  font-size: 2.3rem;
+  color: #ffcc00;
+  text-shadow: 2px 2px 0px #6a1b9a, 4px 4px 0px #000;
+  -webkit-text-stroke: 1px black;
+  margin: 0 0 15px 0;
+  text-transform: uppercase;
+}
+
+.prism-image {
+  width: 100%;
+  height: 420px;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 8px rgba(0,0,0,0.2));
+}
+
+.click-hint {
+  margin-top: auto;
+  padding-bottom: 10px;
+  font-weight: bold;
+  color: #888;
+  letter-spacing: 2px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+/* Contenedor de la Gráfica */
+.stats-clickable-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  cursor: pointer;
+}
+
+.back-info-header h3 {
+  font-family: 'Impact', sans-serif;
+  color: #6a1b9a;
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.chart-container {
+  flex: 1;
+  width: 100%;
+  max-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.4);
+  border-radius: 50%;
+  margin: 10px 0;
+}
+
+/* --- 7. BOTONES DE ACCIÓN (AISLADOS) --- */
+.card-buttons {
+  display: flex;
+  gap: 10px;
+  padding: 15px 20px;
+  background: rgba(255,255,255,0.9);
+  border-top: 3px solid #ffcc00;
+  z-index: 10;
+}
+
+.edit-btn, .delete-btn {
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  flex: 1;
+  font-weight: bold;
+  cursor: pointer;
+  color: white;
+  text-transform: uppercase;
+}
+
+.edit-btn { background: #007bff; }
+.delete-btn { background: #dc3545; }
+
+.edit-btn:hover { background: #0056b3; }
+.delete-btn:hover { background: #a71d2a; }

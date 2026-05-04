@@ -1,0 +1,2 @@
+INSERT INTO stands (name, stand_user, ability, image_url, user_image_url, power, speed, range, durability, precision, potential) 
+VALUES ('Star Platinum', 'Jotaro Kujo', 'Detener el tiempo', 'https://static.wikia.nocookie.net/jojo/images/f/f8/Star_Platinum_Anime_AV.png', 'https://static.wikia.nocookie.net/jojo/images/a/a2/Jotaro_SC_Infobox_Anime.png', 5, 5, 2, 5, 5, 1);
