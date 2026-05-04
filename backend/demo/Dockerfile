@@ -7,8 +7,8 @@ COPY src ./src
 # Compilamos el proyecto saltando los tests para que sea más rápido
 RUN mvn clean package -DskipTests
 
-# Etapa 2: Ejecución
-FROM openjdk:17-jdk-slim
+# Etapa 2: Ejecución (AQUÍ ESTÁ EL CAMBIO)
+FROM eclipse-temurin:17-jdk-jammy
 WORKDIR /app
 # Traemos el archivo .jar que se generó en la etapa 1
 COPY --from=build /app/target/demo-0.0.1-SNAPSHOT.jar app.jar
